@@ -9,11 +9,19 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
+    var gameArea: CGRect
     let spaceShip = SKSpriteNode(imageNamed: "Spaceship")
     let backGround = SKSpriteNode(imageNamed: "Background")
+    let explosionSound = SKAction.playSoundFileNamed("explosion.mp3", waitForCompletion: false)
     let lazeSound = SKAction.playSoundFileNamed("lazesound.mp3", waitForCompletion: false) //set to false to move on to the next action right away
-    var gameArea: CGRect
+    struct physicsCategories{
+        static let None: UInt32 = 0
+        static let Spaceship: UInt32 = 0b1 //1
+        static let LazeBeam: UInt32 = 0b10 //2
+        static let Asteroide: UInt32 = 0b100 //4
+    }
+    
     
     override init(size: CGSize) {
         /*
@@ -32,21 +40,67 @@ class GameScene: SKScene {
     
     //this function will run as soon as the screen load up
     override func didMove(to view: SKView) {
-        backGround.size = self.size
-        //backGround.setScale(1)
-        backGround.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        //to handle contact
+        self.physicsWorld.contactDelegate = self
+        
         //set the background in the depth (it must be the lowest in the stack)
-        backGround.zPosition = 0
         //add background to view
+        //backGround.setScale(1)
+        backGround.size = self.size
+        backGround.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        backGround.zPosition = 0
         self.addChild(backGround)
         
         spaceShip.setScale(1.8)
         spaceShip.position = CGPoint(x: self.size.width/2, y: self.size.height * 0.2)
         spaceShip.zPosition = 2
+        spaceShip.physicsBody = SKPhysicsBody(rectangleOf: spaceShip.size)
+        spaceShip.physicsBody!.affectedByGravity = false
+        spaceShip.physicsBody!.categoryBitMask = physicsCategories.Spaceship
+        spaceShip.physicsBody!.collisionBitMask = physicsCategories.None //Ignore all other objects
+        spaceShip.physicsBody!.contactTestBitMask = physicsCategories.Asteroide //Only contact with asteroide
+        //Assign spaceship to the right category (to make it interact with only the right object)
         self.addChild(spaceShip)
         
         startNewLevel()
     }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        //contact hold the informations about 2 body contact to each other
+        NSLog("collision!")
+        var body1 = SKPhysicsBody()
+        var body2 = SKPhysicsBody()
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            body1 = contact.bodyA
+            body2 = contact.bodyB
+        } else {
+            body1 = contact.bodyB
+            body2 = contact.bodyA
+        }//after this, the body with lower categoryBitMask asign to body1
+        if body1.categoryBitMask == physicsCategories.Spaceship && body2.categoryBitMask == physicsCategories.Asteroide {//if player hit asterroide
+            //delete player and asteroide
+            // ? : to avoid protential bug that will crash the game, if 2 asteroid hit 1 player, it will try to delete 2 times the player
+            NSLog("hit asterroide!")
+            //only do this if these exist a node
+            if body1.node != nil {
+                spawnExplosion(spawnPosition: body1.node!.position)
+            }
+            if body2.node != nil {
+                spawnExplosion(spawnPosition: body2.node!.position)
+            }
+            body1.node?.removeFromParent()
+            body2.node?.removeFromParent()
+        }
+        if body1.categoryBitMask == physicsCategories.LazeBeam && body2.categoryBitMask == physicsCategories.Asteroide && (body2.node?.position.y)! < self.size.height{//if laze hit asterroide and if the asteroid is on the screen
+            NSLog("hit LazeBeam!")
+            if body2.node != nil {
+                spawnExplosion(spawnPosition: body2.node!.position)
+            }
+            body1.node?.removeFromParent()
+            body2.node?.removeFromParent()
+        }
+    }
+    
     
     func startNewLevel() {
         let spawn = SKAction.run(spawnAsteroid)
@@ -63,6 +117,11 @@ class GameScene: SKScene {
         lazeBeam.position.x = spaceShip.position.x
         lazeBeam.position.y = spaceShip.position.y + spaceShip.size.height/4
         lazeBeam.zPosition = 1
+        lazeBeam.physicsBody = SKPhysicsBody(rectangleOf: lazeBeam.size)
+        lazeBeam.physicsBody!.affectedByGravity = false
+        lazeBeam.physicsBody!.categoryBitMask = physicsCategories.LazeBeam
+        lazeBeam.physicsBody!.collisionBitMask = physicsCategories.None //Ignore all other objects
+        lazeBeam.physicsBody!.contactTestBitMask = physicsCategories.Asteroide
         self.addChild(lazeBeam)
         
         //move up the screen and delete
@@ -82,11 +141,16 @@ class GameScene: SKScene {
         let endPoint = CGPoint(x: CGFloat(randomXEnd), y: -self.size.height * 0.2)
         var asteroidString = "Asteroide"
         asteroidString += String(Int.random(in: 1 ... 8))
-        NSLog(asteroidString)
+        //NSLog(asteroidString)
         let randomAsteroid = SKSpriteNode(imageNamed: asteroidString)
         randomAsteroid.setScale(3)
         randomAsteroid.position = startPoint
         randomAsteroid.zPosition = 2
+        randomAsteroid.physicsBody = SKPhysicsBody(circleOfRadius: randomAsteroid.size.width/2)
+        randomAsteroid.physicsBody!.affectedByGravity = false
+        randomAsteroid.physicsBody!.categoryBitMask = physicsCategories.Asteroide
+        randomAsteroid.physicsBody!.collisionBitMask = physicsCategories.None //Ignore all other objects
+        randomAsteroid.physicsBody!.contactTestBitMask = physicsCategories.Spaceship | physicsCategories.LazeBeam //only colide with these 2
         self.addChild(randomAsteroid)
         
         let randomDuration = Double.random(in: 1.3 ... 3)
@@ -99,6 +163,21 @@ class GameScene: SKScene {
         
         randomAsteroid.run(asteroideSequence)
         
+    }
+    
+    func spawnExplosion(spawnPosition: CGPoint) {
+        let explosion = SKSpriteNode(imageNamed: "Explosion")
+        explosion.position = spawnPosition
+        explosion.zPosition = 3
+        explosion.setScale(0)
+        self.addChild(explosion)
+        
+        let scaleIn = SKAction.scale(to: 2, duration: 0.1)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+        let delete = SKAction.removeFromParent()
+        
+        let explosionSequence = SKAction.sequence([explosionSound, scaleIn, fadeOut, delete])
+        explosion.run(explosionSequence)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -123,82 +202,6 @@ class GameScene: SKScene {
         }
         
     }
-    
-    /*
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
-    
-    override func didMove(to view: SKView) {
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
-        
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    
-    override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-    }*/
     
     
 }

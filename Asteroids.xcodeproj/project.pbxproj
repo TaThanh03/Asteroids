@@ -19,7 +19,7 @@
 		13F7B3382198896600313EEE /* AsteroidsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B3372198896600313EEE /* AsteroidsUITests.swift */; };
 		13F7B3462198A24000313EEE /* lazesound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3452198A24000313EEE /* lazesound.mp3 */; };
 		13F7B3482198A24B00313EEE /* explosion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3472198A24B00313EEE /* explosion.mp3 */; };
-		13F7B34A2198CED400313EEE /* explosion.png in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3492198CED400313EEE /* explosion.png */; };
+		13F7B34A2198CED400313EEE /* explosions.png in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3492198CED400313EEE /* explosions.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +58,7 @@
 		13F7B3392198896600313EEE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13F7B3452198A24000313EEE /* lazesound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = lazesound.mp3; sourceTree = "<group>"; };
 		13F7B3472198A24B00313EEE /* explosion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion.mp3; sourceTree = "<group>"; };
-		13F7B3492198CED400313EEE /* explosion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = explosion.png; sourceTree = "<group>"; };
+		13F7B3492198CED400313EEE /* explosions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = explosions.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,7 +116,7 @@
 				13F7B3192198896400313EEE /* GameViewController.swift */,
 				13F7B31B2198896400313EEE /* Main.storyboard */,
 				13F7B31E2198896600313EEE /* Assets.xcassets */,
-				13F7B3492198CED400313EEE /* explosion.png */,
+				13F7B3492198CED400313EEE /* explosions.png */,
 				13F7B3452198A24000313EEE /* lazesound.mp3 */,
 				13F7B3472198A24B00313EEE /* explosion.mp3 */,
 				13F7B3202198896600313EEE /* LaunchScreen.storyboard */,
@@ -248,7 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13F7B31D2198896400313EEE /* Main.storyboard in Resources */,
-				13F7B34A2198CED400313EEE /* explosion.png in Resources */,
+				13F7B34A2198CED400313EEE /* explosions.png in Resources */,
 				13F7B3142198896400313EEE /* GameScene.sks in Resources */,
 				13F7B31F2198896600313EEE /* Assets.xcassets in Resources */,
 				13F7B3222198896600313EEE /* LaunchScreen.storyboard in Resources */,
@@ -457,8 +457,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = GDYRU62339;
 				INFOPLIST_FILE = Asteroids/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -475,8 +476,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = GDYRU62339;
 				INFOPLIST_FILE = Asteroids/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
