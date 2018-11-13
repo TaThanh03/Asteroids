@@ -19,7 +19,10 @@
 		13F7B3382198896600313EEE /* AsteroidsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B3372198896600313EEE /* AsteroidsUITests.swift */; };
 		13F7B3462198A24000313EEE /* lazesound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3452198A24000313EEE /* lazesound.mp3 */; };
 		13F7B3482198A24B00313EEE /* explosion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3472198A24B00313EEE /* explosion.mp3 */; };
-		13F7B34A2198CED400313EEE /* explosions.png in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3492198CED400313EEE /* explosions.png */; };
+		13F7B34E2199A68400313EEE /* myFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B34D2199A67400313EEE /* myFont.ttf */; };
+		13F7B3502199BE9000313EEE /* SettingScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B34F2199BE9000313EEE /* SettingScene.swift */; };
+		13F7B3522199C59F00313EEE /* ModelPickerLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B3512199C59F00313EEE /* ModelPickerLevel.swift */; };
+		13F7B3542199E22900313EEE /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B3532199E22900313EEE /* SettingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +61,10 @@
 		13F7B3392198896600313EEE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13F7B3452198A24000313EEE /* lazesound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = lazesound.mp3; sourceTree = "<group>"; };
 		13F7B3472198A24B00313EEE /* explosion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion.mp3; sourceTree = "<group>"; };
-		13F7B3492198CED400313EEE /* explosions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = explosions.png; sourceTree = "<group>"; };
+		13F7B34D2199A67400313EEE /* myFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = myFont.ttf; sourceTree = "<group>"; };
+		13F7B34F2199BE9000313EEE /* SettingScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingScene.swift; sourceTree = "<group>"; };
+		13F7B3512199C59F00313EEE /* ModelPickerLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPickerLevel.swift; sourceTree = "<group>"; };
+		13F7B3532199E22900313EEE /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,11 +122,14 @@
 				13F7B3192198896400313EEE /* GameViewController.swift */,
 				13F7B31B2198896400313EEE /* Main.storyboard */,
 				13F7B31E2198896600313EEE /* Assets.xcassets */,
-				13F7B3492198CED400313EEE /* explosions.png */,
 				13F7B3452198A24000313EEE /* lazesound.mp3 */,
 				13F7B3472198A24B00313EEE /* explosion.mp3 */,
+				13F7B34D2199A67400313EEE /* myFont.ttf */,
 				13F7B3202198896600313EEE /* LaunchScreen.storyboard */,
 				13F7B3232198896600313EEE /* Info.plist */,
+				13F7B34F2199BE9000313EEE /* SettingScene.swift */,
+				13F7B3512199C59F00313EEE /* ModelPickerLevel.swift */,
+				13F7B3532199E22900313EEE /* SettingView.swift */,
 			);
 			path = Asteroids;
 			sourceTree = "<group>";
@@ -247,8 +256,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13F7B34E2199A68400313EEE /* myFont.ttf in Resources */,
 				13F7B31D2198896400313EEE /* Main.storyboard in Resources */,
-				13F7B34A2198CED400313EEE /* explosions.png in Resources */,
 				13F7B3142198896400313EEE /* GameScene.sks in Resources */,
 				13F7B31F2198896600313EEE /* Assets.xcassets in Resources */,
 				13F7B3222198896600313EEE /* LaunchScreen.storyboard in Resources */,
@@ -280,8 +289,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				13F7B3182198896400313EEE /* GameScene.swift in Sources */,
+				13F7B3502199BE9000313EEE /* SettingScene.swift in Sources */,
 				13F7B31A2198896400313EEE /* GameViewController.swift in Sources */,
+				13F7B3542199E22900313EEE /* SettingView.swift in Sources */,
 				13F7B3122198896400313EEE /* AppDelegate.swift in Sources */,
+				13F7B3522199C59F00313EEE /* ModelPickerLevel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

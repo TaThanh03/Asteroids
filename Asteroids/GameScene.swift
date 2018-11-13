@@ -9,8 +9,16 @@
 import SpriteKit
 import GameplayKit
 
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    weak var viewController: GameViewController!
     var gameArea: CGRect
+    var gameScore = 0
+    
+    let settingLabel = SKLabelNode(fontNamed: "Avenir-Black")
+    let scoreLabel = SKLabelNode(fontNamed: "Avenir-Black")
+    let playLabel = SKLabelNode(fontNamed: "Avenir-Black")
+    
     let spaceShip = SKSpriteNode(imageNamed: "Spaceship")
     let backGround = SKSpriteNode(imageNamed: "Background")
     let explosionSound = SKAction.playSoundFileNamed("explosion.mp3", waitForCompletion: false)
@@ -24,19 +32,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     override init(size: CGSize) {
-        /*
-        let maxAspectRatio: CGFloat = 16.0/9.0
+        /*let maxAspectRatio: CGFloat = 16.0/9.0
         let playableWidth = size.height / maxAspectRatio
         let margin = (size.width - playableWidth)/2*/
-        self.gameArea = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-        
+        gameArea = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        settingLabel.name = "settingLabel"
+        scoreLabel.name = "scoreLabel"
         super.init(size: size)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     //this function will run as soon as the screen load up
     override func didMove(to view: SKView) {
@@ -62,12 +69,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Assign spaceship to the right category (to make it interact with only the right object)
         self.addChild(spaceShip)
         
-        startNewLevel()
+        scoreLabel.text = "Score: 0"
+        scoreLabel.fontSize = 70
+        scoreLabel.fontColor = SKColor.green
+        scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        scoreLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
+        scoreLabel.position = CGPoint(x: self.size.width*0.02, y: self.size.height*0.85)
+        scoreLabel.zPosition = 100
+        self.addChild(scoreLabel)
+        
+        settingLabel.text = "Settings"
+        settingLabel.fontSize = 70
+        settingLabel.fontColor = SKColor.green
+        settingLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
+        settingLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
+        settingLabel.position = CGPoint(x: self.size.width*0.98, y: self.size.height*0.85)
+        settingLabel.zPosition = 100
+        self.addChild(settingLabel)
+        
+        playLabel.text = "Play"
+        playLabel.fontSize = 100
+        playLabel.fontColor = SKColor.green
+        playLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        playLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        playLabel.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        playLabel.zPosition = 100
+        self.addChild(playLabel)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
         //contact hold the informations about 2 body contact to each other
-        NSLog("collision!")
         var body1 = SKPhysicsBody()
         var body2 = SKPhysicsBody()
         if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
@@ -80,7 +111,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if body1.categoryBitMask == physicsCategories.Spaceship && body2.categoryBitMask == physicsCategories.Asteroide {//if player hit asterroide
             //delete player and asteroide
             // ? : to avoid protential bug that will crash the game, if 2 asteroid hit 1 player, it will try to delete 2 times the player
-            NSLog("hit asterroide!")
             //only do this if these exist a node
             if body1.node != nil {
                 spawnExplosion(spawnPosition: body1.node!.position)
@@ -92,24 +122,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             body2.node?.removeFromParent()
         }
         if body1.categoryBitMask == physicsCategories.LazeBeam && body2.categoryBitMask == physicsCategories.Asteroide && (body2.node?.position.y)! < self.size.height{//if laze hit asterroide and if the asteroid is on the screen
-            NSLog("hit LazeBeam!")
             if body2.node != nil {
                 spawnExplosion(spawnPosition: body2.node!.position)
             }
             body1.node?.removeFromParent()
             body2.node?.removeFromParent()
+            addScore()
         }
     }
     
     
-    func startNewLevel() {
+    func startNewLevel(levelNumber: Int) {
+        var levelDuration: TimeInterval
+        if self.action(forKey: "newLevel") != nil {
+            self.removeAction(forKey: "newLevel")
+        }
+        switch levelNumber {
+        case 1:
+            levelDuration = 1.2
+        case 2:
+            levelDuration = 1
+        case 3:
+            levelDuration = 0.8
+        case 4:
+            levelDuration = 0.6
+        case 5:
+            levelDuration = 0.4
+        case 6:
+            levelDuration = 0.2
+        default:
+            levelDuration = 0.5
+            print("Cannot find level")
+        }
+        
         let spawn = SKAction.run(spawnAsteroid)
-        let waitToSpawn = SKAction.wait(forDuration: 0.7)
-        let spawnSequence = SKAction.sequence([spawn, waitToSpawn])
+        let waitToSpawn = SKAction.wait(forDuration: levelDuration)
+        let spawnSequence = SKAction.sequence([waitToSpawn, spawn])
         let spawnForever = SKAction.repeatForever(spawnSequence)
-        self.run(spawnForever)
+        self.run(spawnForever, withKey: "newLevel")
     }
     
+    func addScore() {
+        gameScore += 1
+        scoreLabel.text = "Score: \(gameScore)"
+        
+    }
     
     func fireLaze() {
         let lazeBeam = SKSpriteNode(imageNamed: "Lazebeam")
@@ -181,7 +238,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        if let touch = touches.first {
+            let pos = touch.location(in: self)
+            let node = self.atPoint(pos)
+            
+            if node == playLabel {
+                playLabel.removeFromParent()
+                startNewLevel(levelNumber: 1)
+            }
+            if node == settingLabel {
+                NSLog( "setting touched")
+                if let view = view {
+                    
+                    let transition:SKTransition = SKTransition.fade(withDuration: 1)
+                    let settingScene:SKScene = SettingScene(size: self.size)
+                    settingScene.scaleMode = .aspectFill
+                    view.presentScene(settingScene, transition: transition)
+                }
+            }
+            if node == scoreLabel {
+                NSLog( "score touched")
+            }
+        }
         fireLaze()
+        
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
