@@ -51,23 +51,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.contactDelegate = self
         
         //set the background in the depth (it must be the lowest in the stack)
-        //add background to view
-        //backGround.setScale(1)
         backGround.size = self.size
         backGround.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         backGround.zPosition = 0
         self.addChild(backGround)
-        
-        spaceShip.setScale(1.8)
-        spaceShip.position = CGPoint(x: self.size.width/2, y: self.size.height * 0.2)
-        spaceShip.zPosition = 2
-        spaceShip.physicsBody = SKPhysicsBody(rectangleOf: spaceShip.size)
-        spaceShip.physicsBody!.affectedByGravity = false
-        spaceShip.physicsBody!.categoryBitMask = physicsCategories.Spaceship
-        spaceShip.physicsBody!.collisionBitMask = physicsCategories.None //Ignore all other objects
-        spaceShip.physicsBody!.contactTestBitMask = physicsCategories.Asteroide //Only contact with asteroide
-        //Assign spaceship to the right category (to make it interact with only the right object)
-        self.addChild(spaceShip)
         
         scoreLabel.text = "Score: 0"
         scoreLabel.fontSize = 70
@@ -95,6 +82,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         playLabel.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         playLabel.zPosition = 100
         self.addChild(playLabel)
+        
+        spawnSpaceship()
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -108,6 +97,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             body1 = contact.bodyB
             body2 = contact.bodyA
         }//after this, the body with lower categoryBitMask asign to body1
+        
+        //spaceship hit asteroide
         if body1.categoryBitMask == physicsCategories.Spaceship && body2.categoryBitMask == physicsCategories.Asteroide {//if player hit asterroide
             //delete player and asteroide
             // ? : to avoid protential bug that will crash the game, if 2 asteroid hit 1 player, it will try to delete 2 times the player
@@ -120,7 +111,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             body1.node?.removeFromParent()
             body2.node?.removeFromParent()
+            //stop the game
+            if self.action(forKey: "newLevel") != nil {
+                self.removeAction(forKey: "newLevel")
+            }
+            playLabel.isHidden = false
         }
+        
+        //laze hit asteroide
         if body1.categoryBitMask == physicsCategories.LazeBeam && body2.categoryBitMask == physicsCategories.Asteroide && (body2.node?.position.y)! < self.size.height{//if laze hit asterroide and if the asteroid is on the screen
             if body2.node != nil {
                 spawnExplosion(spawnPosition: body2.node!.position)
@@ -138,23 +136,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.removeAction(forKey: "newLevel")
         }
         switch levelNumber {
-        case 1:
+        case 0:
             levelDuration = 1.2
-        case 2:
+        case 1:
             levelDuration = 1
-        case 3:
+        case 2:
             levelDuration = 0.8
+        case 3:
+            levelDuration = 0.5
         case 4:
-            levelDuration = 0.6
+            levelDuration = 0.3
         case 5:
-            levelDuration = 0.4
-        case 6:
-            levelDuration = 0.2
+            levelDuration = 0.1
         default:
             levelDuration = 0.5
             print("Cannot find level")
         }
-        
+        spaceShip.removeFromParent()
+        spawnSpaceship()
         let spawn = SKAction.run(spawnAsteroid)
         let waitToSpawn = SKAction.wait(forDuration: levelDuration)
         let spawnSequence = SKAction.sequence([waitToSpawn, spawn])
@@ -189,6 +188,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let lazeBeamSequence = SKAction.sequence([lazeSound, moveLazeBeam, deleteLazeBeam])
         lazeBeam.run(lazeBeamSequence)
     }
+    
+    func spawnSpaceship() {
+        spaceShip.setScale(1.8)
+        spaceShip.position = CGPoint(x: self.size.width/2, y: self.size.height * 0.2)
+        spaceShip.zPosition = 2
+        spaceShip.physicsBody = SKPhysicsBody(rectangleOf: spaceShip.size)
+        spaceShip.physicsBody!.affectedByGravity = false
+        spaceShip.physicsBody!.categoryBitMask = physicsCategories.Spaceship
+        spaceShip.physicsBody!.collisionBitMask = physicsCategories.None //Ignore all other objects
+        spaceShip.physicsBody!.contactTestBitMask = physicsCategories.Asteroide //Only contact with asteroide
+        //Assign spaceship to the right category (to make it interact with only the right object)
+        self.addChild(spaceShip)
+    }
+    
     
     func spawnAsteroid() {
         //start at a random in the top and move to a random point at the bottom
@@ -237,34 +250,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         explosion.run(explosionSequence)
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        if let touch = touches.first {
-            let pos = touch.location(in: self)
-            let node = self.atPoint(pos)
-            
-            if node == playLabel {
-                playLabel.removeFromParent()
-                startNewLevel(levelNumber: 1)
-            }
-            if node == settingLabel {
-                NSLog( "setting touched")
-                if let view = view {
-                    
-                    let transition:SKTransition = SKTransition.fade(withDuration: 1)
-                    let settingScene:SKScene = SettingScene(size: self.size)
-                    settingScene.scaleMode = .aspectFill
-                    view.presentScene(settingScene, transition: transition)
-                }
-            }
-            if node == scoreLabel {
-                NSLog( "score touched")
-            }
-        }
-        fireLaze()
-        
-    }
-    
+    //handle movement of spaceship
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch: AnyObject in touches{
             //where we touched the screen?
@@ -284,5 +270,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    //Handle all buttons in the screen
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let pos = touch.location(in: self)
+            let node = self.atPoint(pos)
+            
+            if node == playLabel {
+                NSLog( "play touched")
+                startNewLevel(levelNumber: 0)
+                playLabel.isHidden = true
+            }
+            if node == settingLabel {
+                NSLog( "setting touched")
+                //if in game, stop the game
+                if self.action(forKey: "newLevel") != nil {
+                    self.removeAction(forKey: "newLevel")
+                }
+                viewController.settingView?.isHidden = false
+            }
+            if node == scoreLabel {
+                NSLog( "score touched")
+                //if in game, stop the game
+                if self.action(forKey: "newLevel") != nil {
+                    self.removeAction(forKey: "newLevel")
+                }
+            }
+        
+        }
+        fireLaze()
+        
+    }
     
 }

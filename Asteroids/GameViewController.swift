@@ -12,34 +12,35 @@ import GameplayKit
 
 class GameViewController: UIViewController {
     var currentGame: GameScene!
-
+    var settingView: SettingView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //let scene = GameScene(size: CGSize(width: 2048, height: 1536))
         currentGame = GameScene(size: CGSize(width: 2048, height: 1536))
         currentGame.viewController = self
         
-        
         let view = self.view as! SKView
-        // Load the SKScene from 'GameScene.sks'
-        //if let scene = SKScene(fileNamed: "GameScene") {
         // Set the scale mode to scale to fit the window
         currentGame.scaleMode = .aspectFill
         view.showsFPS = true
         //view.showsNodeCount = true
         view.ignoresSiblingOrder = true
         
+        //THE PARALLAX EFFECT
         let effectH = UIInterpolatingMotionEffect(keyPath: "centre.x", type: .tiltAlongHorizontalAxis)
         effectH.minimumRelativeValue = -50.0
         effectH.maximumRelativeValue = 50.0
         let effectV = UIInterpolatingMotionEffect(keyPath: "centre.y", type: .tiltAlongVerticalAxis)
         effectV.minimumRelativeValue = -50.0
         effectV.maximumRelativeValue = 50.0
-        
         view.addMotionEffect(effectH)
         view.addMotionEffect(effectV)
-
+        
+        //SettingScene
+        settingView = SettingView(frame: UIScreen.main.bounds)
+        settingView!.isHidden = true
+        view.addSubview(settingView!)
+        
         // Present the scene
         view.presentScene(currentGame)
     }
@@ -58,5 +59,13 @@ class GameViewController: UIViewController {
 
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    @objc func actionSettingButtonDoneTouched (sender: UIButton!) {
+        settingView?.isHidden = true
+        print("Done setting with level \((settingView?.scrollLevel.selectedRow(inComponent: 0))!)")
+        currentGame.spaceShip.removeFromParent()
+        currentGame.spawnSpaceship()
+        currentGame.startNewLevel(levelNumber: (settingView?.scrollLevel.selectedRow(inComponent: 0))!)
     }
 }

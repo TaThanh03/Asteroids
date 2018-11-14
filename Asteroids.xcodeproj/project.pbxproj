@@ -20,7 +20,6 @@
 		13F7B3462198A24000313EEE /* lazesound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3452198A24000313EEE /* lazesound.mp3 */; };
 		13F7B3482198A24B00313EEE /* explosion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B3472198A24B00313EEE /* explosion.mp3 */; };
 		13F7B34E2199A68400313EEE /* myFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 13F7B34D2199A67400313EEE /* myFont.ttf */; };
-		13F7B3502199BE9000313EEE /* SettingScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B34F2199BE9000313EEE /* SettingScene.swift */; };
 		13F7B3522199C59F00313EEE /* ModelPickerLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B3512199C59F00313EEE /* ModelPickerLevel.swift */; };
 		13F7B3542199E22900313EEE /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F7B3532199E22900313EEE /* SettingView.swift */; };
 /* End PBXBuildFile section */
@@ -62,7 +61,6 @@
 		13F7B3452198A24000313EEE /* lazesound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = lazesound.mp3; sourceTree = "<group>"; };
 		13F7B3472198A24B00313EEE /* explosion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion.mp3; sourceTree = "<group>"; };
 		13F7B34D2199A67400313EEE /* myFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = myFont.ttf; sourceTree = "<group>"; };
-		13F7B34F2199BE9000313EEE /* SettingScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingScene.swift; sourceTree = "<group>"; };
 		13F7B3512199C59F00313EEE /* ModelPickerLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPickerLevel.swift; sourceTree = "<group>"; };
 		13F7B3532199E22900313EEE /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -127,7 +125,6 @@
 				13F7B34D2199A67400313EEE /* myFont.ttf */,
 				13F7B3202198896600313EEE /* LaunchScreen.storyboard */,
 				13F7B3232198896600313EEE /* Info.plist */,
-				13F7B34F2199BE9000313EEE /* SettingScene.swift */,
 				13F7B3512199C59F00313EEE /* ModelPickerLevel.swift */,
 				13F7B3532199E22900313EEE /* SettingView.swift */,
 			);
@@ -289,7 +286,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13F7B3182198896400313EEE /* GameScene.swift in Sources */,
-				13F7B3502199BE9000313EEE /* SettingScene.swift in Sources */,
 				13F7B31A2198896400313EEE /* GameViewController.swift in Sources */,
 				13F7B3542199E22900313EEE /* SettingView.swift in Sources */,
 				13F7B3122198896400313EEE /* AppDelegate.swift in Sources */,
