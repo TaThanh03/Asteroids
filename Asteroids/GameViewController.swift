@@ -63,9 +63,10 @@ class GameViewController: UIViewController {
     
     @objc func actionSettingButtonDoneTouched (sender: UIButton!) {
         settingView?.isHidden = true
-        print("Done setting with level \((settingView?.scrollLevel.selectedRow(inComponent: 0))!)")
+        print("Set to level \((settingView?.scrollLevel.selectedRow(inComponent: 0))!)")
+        currentGame.playLabel.isHidden = false
         currentGame.spaceShip.removeFromParent()
         currentGame.spawnSpaceship()
-        currentGame.startNewLevel(levelNumber: (settingView?.scrollLevel.selectedRow(inComponent: 0))!)
+        //currentGame.startNewLevel(levelNumber: (settingView?.scrollLevel.selectedRow(inComponent: 0))!)
     }
 }

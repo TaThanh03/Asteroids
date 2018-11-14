@@ -12,6 +12,8 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     weak var viewController: GameViewController!
+    weak var settingView: SettingView!
+    
     var gameArea: CGRect
     var gameScore = 0
     
@@ -154,6 +156,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         spaceShip.removeFromParent()
         spawnSpaceship()
+        gameScore = 0
+        scoreLabel.text = "Score: \(gameScore)"
         let spawn = SKAction.run(spawnAsteroid)
         let waitToSpawn = SKAction.wait(forDuration: levelDuration)
         let spawnSequence = SKAction.sequence([waitToSpawn, spawn])
@@ -164,7 +168,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addScore() {
         gameScore += 1
         scoreLabel.text = "Score: \(gameScore)"
-        
     }
     
     func fireLaze() {
@@ -277,12 +280,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let node = self.atPoint(pos)
             
             if node == playLabel {
-                NSLog( "play touched")
-                startNewLevel(levelNumber: 0)
+                startNewLevel(levelNumber: (viewController.settingView?.scrollLevel.selectedRow(inComponent: 0))!)
+                    //settingView?.scrollLevel.selectedRow(inComponent: 0))
                 playLabel.isHidden = true
             }
             if node == settingLabel {
-                NSLog( "setting touched")
                 //if in game, stop the game
                 if self.action(forKey: "newLevel") != nil {
                     self.removeAction(forKey: "newLevel")
@@ -290,7 +292,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 viewController.settingView?.isHidden = false
             }
             if node == scoreLabel {
-                NSLog( "score touched")
                 //if in game, stop the game
                 if self.action(forKey: "newLevel") != nil {
                     self.removeAction(forKey: "newLevel")
@@ -298,7 +299,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         
         }
-        fireLaze()
+        if spaceShip.parent != nil {
+            fireLaze()
+        }
         
     }
     

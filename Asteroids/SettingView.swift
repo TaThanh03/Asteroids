@@ -53,10 +53,9 @@ class SettingView: UIView, UIPickerViewDelegate{
     func drawInFormat (format: CGSize) {
         let centre_width = CGFloat(format.width/2)
         let centre_height = CGFloat(format.height/2)
-        
+        /*
         print("w %f", format.width)
-        print("h %f", format.height)
-        
+        print("h %f", format.height)*/
         blurView.frame = CGRect(x: 0, y: 0, width: format.width, height: format.height)
         scrollLevel.frame = CGRect(x: centre_width - 100, y: centre_height - 30, width: 200, height: 60)
         scrollLabel.frame = CGRect(x: centre_width - 100, y: centre_height - 100, width: 200, height: 30)
